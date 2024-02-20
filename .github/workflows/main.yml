@@ -1,0 +1,5 @@
+steps:
+- uses: actions/checkout@master
+  with:
+    name: danito360/pythonProject
+    ref: refs/heads/release
