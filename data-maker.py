@@ -65,13 +65,13 @@ def verify_downloadable():
                 response = urlopen(enlace)
                 status = response.getcode()
                 if status == 200:
-                    message = f"El archivo en el enlace {enlace} es descargable."
+                    message = f"El archivo {nombre} es descargable."
                     color = "green"
                 else:
-                    message = f"El archivo en el enlace {enlace} no es descargable (Código de estado: {status})."
+                    message = f"El archivo {nombre} no es descargable (Código de estado: {status})."
                     color = "red"
             except URLError as e:
-                message = f"El archivo en el enlace {enlace} no es descargable: {e.reason}."
+                message = f"El archivo {nombre} no es descargable: {e.reason}."
                 color = "red"
             label = tk.Label(frame_entries, text=f"{numero}: {nombre} ({enlace})", wraplength=400, justify=tk.LEFT)
             label.grid(row=int(numero), column=1, sticky="w")
