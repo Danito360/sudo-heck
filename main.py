@@ -4,18 +4,24 @@ from tqdm import tqdm
 import os
 import re
 import subprocess
-import pandas as pd
+#import pandas as pd
 
 
 FILES_DIRECTORY = "Files"  # Directorio donde se descargarán los archivos
 SEVEN_ZIP_EXECUTABLE = "7z.exe"  # Ruta del ejecutable 7z
 
+import requests
+
 def download_with_progress(url, filename):
-    # Descarga el archivo y obtén su tamaño total en bytes
-    with tqdm(unit='B', unit_scale=True, unit_divisor=1024, miniters=1, desc=filename) as t:
-        def update_to(count, block_size, total_size):
-            t.update(count * block_size - t.n)
-        urlretrieve(url, filename, reporthook=update_to)
+    response = requests.get(url, stream=True)
+    total_size_in_bytes = int(response.headers.get('content-length', 0))
+    block_size = 1024  # 1 Kibibyte
+    progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
+    with open(filename, 'wb') as file:
+        for data in response.iter_content(block_size):
+            progress_bar.update(len(data))
+            file.write(data)
+    progress_bar.close()
 
 def download_file(url, filename):
     filepath = os.path.join(FILES_DIRECTORY, filename)
@@ -26,14 +32,38 @@ def download_file(url, filename):
     descomprimir_archivos(filepath)
     return filepath
 
-def delete_file(filename):
-    filepath = os.path.join(FILES_DIRECTORY, filename)
-    secure = input(f"¿Estás seguro de que quieres eliminar: {filename} de {filepath}? Y/N: ")
-    if secure.lower() == "y":
-        print(f"Eliminando {filepath}...")
-        os.remove(filepath)
-    else:
-        print("No se realizará ninguna acción.")
+def delete_file(search_term):
+    archivos_encontrados = []
+    for file in os.listdir(FILES_DIRECTORY):
+        if search_term.lower() in file.lower():
+            archivos_encontrados.append(file)
+
+    if not archivos_encontrados:
+        print("No se encontraron archivos que coincidan con el término de búsqueda.")
+        return
+
+    print("Se encontraron múltiples archivos que coinciden con el término de búsqueda:")
+    for i, file in enumerate(archivos_encontrados, 1):
+        print(f"[{i}] {file}")
+
+    opcion = input("Ingrese el número del archivo que desea eliminar: ")
+
+    try:
+        opcion = int(opcion)
+        if 1 <= opcion <= len(archivos_encontrados):
+            archivo_a_eliminar = archivos_encontrados[opcion - 1]
+            filepath = os.path.join(FILES_DIRECTORY, archivo_a_eliminar)
+            secure = input(f"¿Estás seguro de que quieres eliminar: {archivo_a_eliminar} de {filepath}? Y/N: ")
+            if secure.lower() == "y":
+                print(f"Eliminando {filepath}...")
+                os.remove(filepath)
+            else:
+                print("No se realizará ninguna acción.")
+        else:
+            print("Opción inválida.")
+    except ValueError:
+        print("Por favor, ingrese un número válido.")
+
 
 def list_files(directory):
     print("Archivos en el subdirectorio 'Files':")
