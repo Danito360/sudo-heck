@@ -22,10 +22,11 @@ Para ejecutar SUDOHECK, sigue estos pasos:
 
 #### Descargar un Archivo
 ```
-python main.py heck [SearchTerm] [Program]
+python main.py heck [SearchTerm] [HeckFile]
 ```
 - `[SearchTerm]`: Especifica el número o nombre del archivo a buscar.
-- `[Program]` (opcional): Es el nombre del archivo de texto que contiene la información. Por defecto, es `sudoheck-data.heck`.
+- `[HeckFile]` (opcional): Es el nombre del archivo de texto que contiene la información. Por defecto, es `sudoheck-data.heck`.
+#### Actualmente no se el archivo por defecto no contiene enlaces útiles, pero puedes crear tu propio archivo ejecutando data-maker.py (con interfaz gráfica)
 
 #### Eliminar un Archivo Descargado
 ```
