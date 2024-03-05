@@ -12,6 +12,17 @@ SEVEN_ZIP_EXECUTABLE = "7z.exe"  # Ruta del ejecutable 7z
 
 import requests
 
+def limp():
+    print("")
+    print("")
+
+def limp2():
+    print("")
+    print("")
+    print("")
+    print("")
+
+
 def download_with_progress(url, filename):
     response = requests.get(url, stream=True)
     total_size_in_bytes = int(response.headers.get('content-length', 0))
@@ -41,8 +52,8 @@ def delete_file(search_term):
     if not archivos_encontrados:
         print("No se encontraron archivos que coincidan con el término de búsqueda.")
         return
-
-    print("Se encontraron múltiples archivos que coinciden con el término de búsqueda:")
+    ##if archivos_encontrados >= 2:
+    print("Se han encontrado estos archivos que coinciden con el término de búsqueda:")
     for i, file in enumerate(archivos_encontrados, 1):
         print(f"[{i}] {file}")
 
@@ -132,7 +143,16 @@ def descomprimir_archivos(filepath):
     if extension in ('.zip', '.rar', '.7z', '.tar', '.gz', '.bz2', '.xz'):
         try:
             subprocess.run([SEVEN_ZIP_EXECUTABLE, "x", filepath, f"-o{directory_path}", "-y"], check=True)
+            limp2()
             print(f"Archivos descomprimidos en: {directory_path}")
+            size = round(os.path.getsize(filepath)/1000000000, 3)
+            confir = input(f"Desea eliminar el archivo comprimido, ocupa {size} Gb, [S]i-[N]o: ")
+            if confir == "S":
+                print("Eliminado archivos comprimidos...")
+                os.remove(filepath)
+            else:
+                print("No se eliminarán los archivos comprimidos")
+            subprocess.Popen(f'explorer /select,"{directory_path}"')
         except subprocess.CalledProcessError:
             print("Error al descomprimir el archivo.")
     else:
